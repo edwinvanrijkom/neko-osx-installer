@@ -1,0 +1,19 @@
+ #!/bin/sh
+
+sudo rm -R root
+mkdir -p root/usr/local/bin
+mkdir -p root/usr/local/lib
+mkdir -p root/usr/bin
+
+cp ../neko/bin/*.dylib root/usr/local/lib
+cp ../neko/bin/*.ndll root/usr/local/lib
+cp ../neko/bin/neko* root/usr/local/bin
+cp neko_shell_link root/usr/bin/neko
+cp nekoc_shell_link root/usr/bin/nekoc
+cp nekoml_shell_link root/usr/bin/nekoml
+cp nekotools_shell_link root/usr/bin/nekotools
+
+sudo chown -R root:admin root
+sudo chmod -R o=rx,g=rwx,u=rxw root
+
+sudo /Developer/Tools/packagemaker -build -proj neko.pmproj -p neko.pkg -v
