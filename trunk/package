@@ -1,19 +1,38 @@
- #!/bin/sh
+#!/bin/sh
 
-sudo rm -R root
-mkdir -p root/usr/local/bin
-mkdir -p root/usr/local/lib
-mkdir -p root/usr/bin
+ROOT="./root"
+LIB="$ROOT/usr/local/lib"
+BIN="$ROOT/usr/local/bin"
+SRC="../neko/bin"
 
-cp ../neko/bin/*.dylib root/usr/local/lib
-cp ../neko/bin/*.ndll root/usr/local/lib
-cp ../neko/bin/neko* root/usr/local/bin
-cp neko_shell_link root/usr/bin/neko
-cp nekoc_shell_link root/usr/bin/nekoc
-cp nekoml_shell_link root/usr/bin/nekoml
-cp nekotools_shell_link root/usr/bin/nekotools
+if [ -d "$ROOT" ]; then 
+	echo "removing previous builds"
+	sudo rm -R *.pkg
+	sudo rm *.zip
+	sudo rm -R $ROOT
+fi
 
+echo "creating root folders"
+mkdir -p $BIN
+mkdir -p $LIB
+
+echo "copying source files"
+cp $SRC/*.dylib $LIB
+cp $SRC/*.ndll $LIB
+cp $SRC/neko* $BIN
+
+echo "setting rights on copied files"
 sudo chown -R root:admin root
 sudo chmod -R o=rx,g=rwx,u=rxw root
 
+echo "copying installer script"
+ISF="$ROOT/Install_resources"
+mkdir $ISF
+cp postflight $ISF/
+
+echo "running PackageMaker"
+echo ""
 sudo /Developer/Tools/packagemaker -build -proj neko.pmproj -p neko.pkg -v
+
+echo ""
+echo "done"
