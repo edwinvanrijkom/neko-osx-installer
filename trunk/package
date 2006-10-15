@@ -5,34 +5,43 @@ LIB="$ROOT/usr/local/lib"
 BIN="$ROOT/usr/local/bin"
 SRC="../neko/bin"
 
-if [ -d "$ROOT" ]; then 
-	echo "removing previous builds"
+function checkForError() {
+    if [ $? != 0 ]; then
+        echo "-- Error on $1"
+        exit $?
+    else
+        echo "++ Success on $1"    
+    fi    
+}
+
+if [ -d "$ROOT" ]; then	
 	sudo rm -R *.pkg
 	sudo rm *.zip
-	sudo rm -R $ROOT
+	sudo rm -R $ROOT	
 fi
 
-echo "creating root folders"
 mkdir -p $BIN
+checkForError "creating $BIN folder"
 mkdir -p $LIB
+checkForError "creating $LIB folder"
 
-echo "copying source files"
 cp $SRC/*.dylib $LIB
+checkForError "copying .dylibs"
 cp $SRC/*.ndll $LIB
+checkForError "copying .ndlls"
 cp $SRC/neko* $BIN
+checkForError "copying binaries"
 
-echo "setting rights on copied files"
 sudo chown -R root:admin root
+checkForError "setting owner on root"
 sudo chmod -R o=rx,g=rwx,u=rxw root
+checkForError "setting rights on root"
 
-echo "copying installer script"
 ISF="$ROOT/Install_resources"
 mkdir $ISF
+checkForError "creating $ISF folder"
 cp postflight $ISF/
+checkForError "copying postflight script"
 
-echo "running PackageMaker"
-echo ""
 sudo /Developer/Tools/packagemaker -build -proj neko.pmproj -p neko.pkg -v
-
-echo ""
-echo "done"
+checkForError "creating package"
