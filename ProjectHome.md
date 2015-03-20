@@ -1,0 +1,1 @@
+Mac OSX installer for the Neko Virtual Machine, allowing people to easily package their local build for distribution.
